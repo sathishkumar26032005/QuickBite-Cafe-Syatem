@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order - Cafe Management</title>
+    <link rel="stylesheet" href="order.css">
+</head>
+
+<body>
+    <header>
+        <h1>QuickBite Cafe - Place Your Order</h1>
+    </header>
+
+    <section class="order-section">
+        <form id="orderForm">
+            <h2>Order Form</h2>
+            <label for="name">Name</label>
+            <input type="text" id="name" placeholder="Your Name" required>
+
+            <label for="menu-item">Select Item</label>
+            <select id="menu-item">
+                <option value="Signature Coffee">Signature Coffee</option>
+                <option value="Vegan Salad">Vegan Salad</option>
+                <option value="Blueberry Muffin">Blueberry Muffin</option>
+            </select>
+
+            <label for="quantity">Quantity</label>
+            <input type="number" id="quantity" min="1" max="10" required placeholder="1-10">
+
+            <button type="submit">Place Order</button>
+        </form>
+        <div id="orderConfirmation" class="confirmation-message" style="display: none;">
+            Your order has been placed successfully!
+        </div>
+        <div class="reserve-table">
+            <a href="/customer/resertable.html" class="btn">Reserve Table</a>
+        </div>
+    </section>
+    <footer>
+        <p>&copy; 2024 QuickBite Cafe. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.getElementById('orderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const order = {
+                name: document.getElementById('name').value,
+                menuItem: document.getElementById('menu-item').value,
+                quantity: parseInt(document.getElementById('quantity').value),
+            };
+
+            const response = await fetch('http://localhost:3000/order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(order),
+            });
+
+            if (response.ok) {
+                document.getElementById('orderForm').reset();
+                document.getElementById('orderConfirmation').style.display = 'block';
+            } else {
+                alert('There was a problem with placing your order.');
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Orders - Cafe Management</title>
+    <link rel="stylesheet" href="vieworder.css">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <h1>QuickBite Cafe System - View Orders</h1>
+    </header>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <ul>
+            <li><a href="/admin side/view order.html">View Orders</a></li>
+            <li><a href="/admin side/manage-staff.html">Manage Staff</a></li>
+            <li><a href="/admin side/admin item.html">Manage Menu Items</a></li>
+            <li><a href="/admin side/table.html">Reservations</a></li>
+        </ul>
+    </nav>
+
+    <!-- Orders List Section -->
+    <section class="view-orders">
+        <h2>Orders List</h2>
+        <table id="orderTable">
+            <tr>
+                <th>Order ID</th>
+                <th>Customer Name</th>
+                <th>Item Ordered</th>
+                <th>Quantity</th>
+                <th>Status</th>
+            </tr>
+        </table>
+    </section>
+    <footer>
+        <p>&copy; 2024 QuickBite Cafe | All Rights Reserved</p>
+    </footer>
+
+
+    <script>
+        // Connect to the server using Socket.IO
+        const socket = io('http://localhost:3000');
+
+        // Listen for the 'newOrder' event
+        socket.on('newOrder', (order) => {
+            const orderTable = document.getElementById('orderTable');
+
+            // Insert new row for the order
+            const row = orderTable.insertRow();
+            row.innerHTML = `
+                <td>${order._id}</td>
+                <td>${order.name}</td>
+                <td>${order.menuItem}</td>
+                <td>${order.quantity}</td>
+                <td>${order.status}</td>
+            `;
+        });
+
+        // Fetch initial orders on page load
+        async function fetchOrders() {
+            const response = await fetch('http://localhost:3000/orders');
+            const orders = await response.json();
+
+            const orderTable = document.getElementById('orderTable');
+            orders.forEach(order => {
+                const row = orderTable.insertRow();
+                row.innerHTML = `
+                    <td>${order._id}</td>
+                    <td>${order.name}</td>
+                    <td>${order.menuItem}</td>
+                    <td>${order.quantity}</td>
+                    <td>${order.status}</td>
+                `;
+            });
+        }
+
+        fetchOrders();
+    </script>
+
+</body>
+
+</html>

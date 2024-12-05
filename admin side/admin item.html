@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Manage Menu Items - Cafe Management System</title>
+    <link rel="stylesheet" href="admin item.css" />
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      table, th, td {
+        border: 1px solid black;
+      }
+      th, td {
+        padding: 10px;
+        text-align: left;
+      }
+      button {
+        margin: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <h1>QuickBite Cafe System - Manage Menu Items</h1>
+      </div>
+    </header>
+    <nav>
+      <ul>
+          <li><a href="/admin side/view order.html">View Orders</a></li>
+          <li><a href="/admin side/manage-staff.html">Manage Staff</a></li>
+          <li><a href="/admin side/admin item.html">Manage Menu Items</a></li>
+          <li><a href="/admin side/table.html">Reservations</a></li>
+      </ul>
+    </nav>
+
+    <section class="manage-menu">
+      <h2>Menu Items</h2>
+      <table id="menuTable">
+        <tr>
+          <th>Item ID</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Actions</th>
+        </tr>
+        <!-- Example Menu Item Row -->
+        <tr>
+          <td>001</td>
+          <td>Signature Coffee</td>
+          <td>Rs5.00</td>
+          <td>
+            <button onclick="editMenuItem(this)">Edit</button>
+            <button onclick="deleteMenuItem(this)">Delete</button>
+          </td>
+        </tr>
+      </table>
+
+      <h3>Add New Menu Item</h3>
+      <form id="addMenuItemForm">
+        <label for="item-name">Item Name:</label>
+        <input type="text" id="item-name" name="item-name" required />
+        <label for="item-price">Price:</label>
+        <input type="text" id="item-price" name="item-price" required />
+        <input type="submit" value="Add Menu Item" />
+      </form>
+    </section>
+
+    <footer>
+      <p>&copy; 2024 QuickBite Cafe | All Rights Reserved</p>
+    </footer>
+
+    <script>
+async function fetchMenuItems() {
+    const response = await fetch('http://localhost:3000/menu');
+    const menuItems = await response.json();
+
+    const menuTable = document.getElementById('menuTable');
+    menuTable.innerHTML = `
+        <tr>
+            <th>Item ID</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Actions</th>
+        </tr>
+    `;
+
+    menuItems.forEach((item, index) => {
+        const newRow = menuTable.insertRow();
+
+        newRow.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${item.name}</td>
+            <td>Rs${item.price}</td>
+            <td>
+                <button onclick="editMenuItem('${item._id}', '${item.name}', '${item.price}')">Edit</button>
+                <button onclick="deleteMenuItem('${item._id}')">Delete</button>
+            </td>
+        `;
+    });
+}
+document.getElementById('addMenuItemForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const itemName = document.getElementById('item-name').value;
+    const itemPrice = document.getElementById('item-price').value;
+    const response = await fetch('http://localhost:3000/menu', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: itemName, price: parseFloat(itemPrice) }),
+    });
+
+    if (response.ok) {
+        alert('Menu item added successfully!');
+        fetchMenuItems();
+        document.getElementById('addMenuItemForm').reset();
+    } else {
+        alert('Failed to add menu item.');
+    }
+});
+async function deleteMenuItem(id) {
+    const response = await fetch(`http://localhost:3000/menu/${id}`, {
+        method: 'DELETE',
+    });
+
+    if (response.ok) {
+        alert('Menu item deleted successfully!');
+        fetchMenuItems();
+    } else {
+        alert('Failed to delete menu item.');
+    }
+}
+async function editMenuItem(id, currentName, currentPrice) {
+    const newName = prompt('Enter new name:', currentName);
+    const newPrice = prompt('Enter new price:', currentPrice);
+
+    if (newName && newPrice) {
+        const response = await fetch(`http://localhost:3000/menu/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: newName, price: parseFloat(newPrice) }),
+        });
+
+        if (response.ok) {
+            alert('Menu item updated successfully!');
+            fetchMenuItems();
+        } else {
+            alert('Failed to update menu item.');
+        }
+    }
+}
+
+// Fetch menu items on page load
+fetchMenuItems();
+
+    </script>
+  </body>
+</html>

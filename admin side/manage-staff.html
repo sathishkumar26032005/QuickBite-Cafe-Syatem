@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Staff - Cafe Management System</title>
+    <link rel="stylesheet" href="manage.css">
+</head>
+<body>
+    <header>
+        <h1>QuickBite Cafe System - Manage Staff</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/admin side/view order.html">View Orders</a></li>
+            <li><a href="/admin side/manage-staff.html">Manage Staff</a></li>
+            <li><a href="/admin side/admin item.html">Manage Menu Items</a></li>
+            <li><a href="/admin side/table.html">Reservations</a></li>
+        </ul>
+    </nav>
+
+    <section class="manage-staff">
+        <h2>Staff Members</h2>
+        <table id="staffTable">
+            <thead>
+                <tr>
+                    <th>Staff ID</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <h3>Add New Staff</h3>
+        <form id="addStaffForm">
+            <label for="staff-name">Name:</label>
+            <input type="text" id="staff-name" name="staff-name" required>
+            <label for="staff-role">Role:</label>
+            <input type="text" id="staff-role" name="staff-role" required>
+            <button type="submit">Add Staff</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 QuickBite Cafe | All Rights Reserved</p>
+    </footer>
+
+    <script>
+       const staffTableBody = document.querySelector('#staffTable tbody');
+const addStaffForm = document.querySelector('#addStaffForm');
+
+// Fetch staff data from the server
+async function fetchStaff() {
+    try {
+        const response = await fetch('http://localhost:3000/staff');
+        const staff = await response.json();
+
+        // Clear existing table rows
+        staffTableBody.innerHTML = '';
+
+        // Populate table
+        staff.forEach(({ _id, name, role }) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${_id}</td>
+                <td>${name}</td>
+                <td>${role}</td>
+                <td>
+                    <button onclick="deleteStaff('${_id}')">Delete</button>
+                </td>
+            `;
+            staffTableBody.appendChild(row);
+        });
+    } catch (err) {
+        console.error('Error fetching staff:', err);
+    }
+}
+
+// Add new staff
+addStaffForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('staff-name').value;
+    const role = document.getElementById('staff-role').value;
+
+    try {
+        const response = await fetch('http://localhost:3000/staff', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, role }),
+        });
+
+        if (response.ok) {
+            fetchStaff(); // Refresh the table
+            addStaffForm.reset(); // Clear the form
+        } else {
+            console.error('Failed to add staff');
+        }
+    } catch (err) {
+        console.error('Error adding staff:', err);
+    }
+});
+
+// Delete staff
+async function deleteStaff(id) {
+    try {
+        const response = await fetch(`http://localhost:3000/staff/${id}`, {
+            method: 'DELETE',
+        });
+
+        if (response.ok) {
+            fetchStaff(); // Refresh the table
+        } else {
+            console.error('Failed to delete staff');
+        }
+    } catch (err) {
+        console.error('Error deleting staff:', err);
+    }
+}
+
+// Initial fetch of staff
+fetchStaff();
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserve a Table</title>
+    <link rel="stylesheet" href="Reserve.css">
+</head>
+
+<body>
+    <header>
+        <h1>QuickBite Cafe - Reserve a Table</h1>
+    </header>
+    <main>
+        <form id="reservationForm">
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date" required>
+
+            <label for="time">Time:</label>
+            <input type="time" id="time" name="time" required>
+
+            <label for="guests">Guests:</label>
+            <input type="number" id="guests" name="guests" min="1" max="10" required>
+
+            <label for="table">Table:</label>
+            <select id="table" name="table" required>
+                <option value="Table 1">Table 1</option>
+                <option value="Table 2">Table 2</option>
+                <option value="Table 3">Table 3</option>
+                <option value="Table 4">Table 4</option>
+                <option value="Table 5">Table 5</option>
+            </select>
+
+            <button type="submit">Reserve</button>
+        </form>
+        <div id="successMessage" style="display: none;">Reservation successful!</div>
+    </main>
+    <script>
+        document.getElementById('reservationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const reservation = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                date: document.getElementById('date').value,
+                time: document.getElementById('time').value,
+                guests: parseInt(document.getElementById('guests').value),
+                table: document.getElementById('table').value,
+            };
+
+            console.log(reservation)
+
+            try {
+                const response = await fetch('http://localhost:3000/reservations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(reservation),
+                });
+
+                if (response.ok) {
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('reservationForm').reset();
+                } else {
+                    alert('Error making reservation. Please try again.');
+                }
+            } catch (err) {
+                console.error('Failed to connect to the server:', err);
+                alert('Failed to connect to the server. Please try again later.');
+            }
+        });
+
+    </script>
+</body>
+
+</html>

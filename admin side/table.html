@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Reservation Management</title>
+    <link rel="stylesheet" href="table.css">
+</head>
+
+<body>
+    <header>
+        <h1>QuickBite Cafe System - Reservation Management</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/admin side/view order.html">View Orders</a></li>
+            <li><a href="/admin side/manage-staff.html">Manage Staff</a></li>
+            <li><a href="/admin side/admin item.html">Manage Menu Items</a></li>
+            <li><a href="/admin side/table.html">Reservations</a></li>
+        </ul>
+    </nav>
+    <section class="reservation-management">
+        <h2>Customer Reservations</h2>
+        <table class="reservation-table" id="reservationTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Guests</th>
+                    <th>Table</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="reservationData"></tbody>
+        </table>
+    </section>
+    <footer>
+        <p>&copy; 2024 QuickBite Cafe | All Rights Reserved</p>
+    </footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const reservationTableBody = document.getElementById("reservationData");
+
+            async function fetchReservations() {
+                try {
+                    const response = await fetch("http://localhost:3000/getReservations");
+
+                    if (!response.ok) {
+                        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                    }
+
+                    const reservations = await response.json();
+
+                    reservationTableBody.innerHTML = "";
+
+                    reservations.forEach((reservation) => {
+                        const row = document.createElement("tr");
+
+                        row.innerHTML = `
+                            <td>${reservation.name}</td>
+                            <td>${reservation.email}</td>
+                            <td>${reservation.date}</td>
+                            <td>${reservation.time}</td>
+                            <td>${reservation.guests}</td>
+                            <td>${reservation.table}</td>
+                            <td>${reservation.status}</td>
+                        `;
+
+                        reservationTableBody.appendChild(row);
+                    });
+                } catch (error) {
+                    console.error("Failed to fetch reservations:", error);
+                }
+            }
+            fetchReservations();
+        });
+    </script>
+</body>
+
+</html>

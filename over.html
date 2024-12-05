@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Login - Cafe Management System</title>
+    <link rel="stylesheet" href="over.css">
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>QuickBite Cafe System</h1>
+        </div>
+    </header>
+
+    <section class="login-section">
+        <h2>Login</h2>
+        
+
+        <!-- Admin Login Form -->
+        <div class="admin-login">
+            <h3>Admin Login</h3>
+            <form onsubmit="return validateAdminLogin()">
+                <label for="mobile">Mobile Number:</label>
+                <input type="tel" id="mobile" name="mobile" placeholder="Enter 10-digit mobile number" required>
+                
+                <label for="specialInput">Password:</label>
+                <input type="password" id="specialInput" name="specialInput" placeholder="Enter password" required>
+
+                <label for="otp">OTP:</label>
+                <input type="text" id="otp" name="otp" placeholder="Enter OTP" required>
+
+                <input type="submit" value="Admin Login" class="btn">
+            </form>
+
+            <!-- Button to generate OTP -->
+            <button onclick="generateOTP()" class="btn">Send OTP</button>
+        </div>
+
+        <!-- Customer Login Button -->
+        <div class="customer-login">
+            <h3>Customer</h3>
+            <p>Click below to proceed as a customer:</p>
+            <a href="customer/front.html" class="btn">Continue as Customer</a>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 QuickBite Cafe | All Rights Reserved</p>
+    </footer>
+    <script>
+        let generatedOTP = "";
+
+// Function to generate a random 6-digit OTP
+function generateOTP() {
+    generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+    alert("Your OTP is: " + generatedOTP);
+}
+
+// JavaScript for password and OTP validation
+function validateAdminLogin() {
+    const mobile = document.getElementById("mobile").value;
+    const password = document.getElementById("specialInput").value;
+    const otp = document.getElementById("otp").value;
+    const specialCharPattern = /[!@#$%^&*()_+]/;
+
+    // Validate mobile number
+    if (!/^\d{10}$/.test(mobile)) {
+        alert("Mobile number must be 10 digits.");
+        return false;
+    }
+
+    // Validate OTP
+    if (otp !== generatedOTP) {
+        alert("Invalid OTP. Please try again.");
+        return false;
+    }
+
+    // Validate password contains at least one special character
+    if (!specialCharPattern.test(password)) {
+        alert("Password must contain at least one special character (!@#$%^&*()_+)");
+        return false;
+    }
+
+    // If all validations pass, redirect to the admin page
+    alert("Login successful!");
+    window.location.href = "/admin side/adminfront.html";
+    return false;
+}
+
+    </script>
+</body>
+</html>
